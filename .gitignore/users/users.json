@@ -1,0 +1,56 @@
+{
+	"Beefichor": {
+		"firstname": "Daniel",
+		"lastname": "Avram",
+		"email": "avramdaniel.7773@gmail.com",
+		"password": "Sunflower10!",
+		"birthdate": "2001-01-08",
+		"friends": [
+			"Youwanna",
+			"Dumitru"
+		],
+		"blocked": []
+	},
+	"Youwanna": {
+		"firstname": "Ioana",
+		"lastname": "Vatamanu",
+		"email": "ioana@vatamanu.com",
+		"password": "Adordanu3!",
+		"birthdate": "2001-01-08",
+		"friends": [
+			"Beefichor",
+			"Nicu123"
+		],
+		"blocked": []
+	},
+	"Nicu123": {
+		"firstname": "Nicu",
+		"lastname": "Ducal",
+		"email": "nicu@gmail.com",
+		"password": "Felinar3!",
+		"birthdate": "2001-01-08",
+		"friends": [
+			"Youwanna"
+		],
+		"blocked": []
+	},
+	"cyberbonk": {
+		"firstname": "Paul",
+		"lastname": "Balan",
+		"email": "paul@gmail.com",
+		"password": "Silence4!",
+		"friends": [],
+		"blocked": []
+	},
+	"Dumitru": {
+		"firstname": "Dumitru",
+		"lastname": "Vlad",
+		"email": "sDumitru@f.com",
+		"password": "Laborator10!",
+		"birthdate": "2001-01-08",
+		"friends": [
+			"Beefichor"
+		],
+		"blocked": []
+	}
+}

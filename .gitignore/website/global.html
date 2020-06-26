@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Page Title</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel="stylesheet" type="text/css" href="styles/login.css" >
+</head>
+<body>
+    <div id="navwrapper">
+        
+        <table id="navbar">
+            <tr>
+                <td>
+                    <div class="toggle">
+    
+                      <input type="checkbox" id="mode"/>
+                      <label for="mode"></label>
+                      
+                    </div>
+                  </td>
+                <td>
+                    <h1 class="logowrapper" id = "mainname">Guacamole
+                        <button onclick = "logOut()">Logout</button>
+                    </h1>
+
+                </td>
+                <td>
+                    <a id = "currUser" class="rowtext"></a>
+                </td>
+            </tr>
+          
+        </table>
+    </div>
+    <div id = "postcontent">
+       
+    </div>
+    <script src = "scripts/global.js" ></script>
+
+</body>
+</html>

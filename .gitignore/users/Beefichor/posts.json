@@ -1,0 +1,23 @@
+[
+	{
+		"username": "Beefichor",
+		"date": "2020-05-22T23:30:05.483Z",
+		"title": "Hello world!",
+		"text": "this is the first post here! Amazing",
+		"state": "happy"
+	},
+	{
+		"username": "Beefichor",
+		"date": "2020-06-26T10:06:16.444Z",
+		"title": "postare nou",
+		"text": "salut",
+		"state": "excited"
+	},
+	{
+		"username": "Beefichor",
+		"date": "2020-06-26T10:10:51.052Z",
+		"title": "",
+		"text": "",
+		"state": "happy"
+	}
+]

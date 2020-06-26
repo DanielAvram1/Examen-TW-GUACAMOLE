@@ -1,0 +1,859 @@
+<html>
+    <head>
+        <style>
+          .row {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 0 4px;
+            width: 90%;
+            margin: auto;
+          }
+          .column {
+            flex: 50%;
+            max-width: 48%;
+            padding: 0 4px;
+          }
+          .column div {
+            margin-top: 8px;
+            vertical-align: middle;
+            background-color: rgba(217, 245, 222, 0.685);
+            border-radius: 5px;
+          }
+          body {
+            margin: 0;
+            font-family: 'Lucida Grande', tahoma,verdana,arial,sans-serif;
+            line-height: 1.28;
+            background-color: #101310;
+            transition: background-color .2s ease-in-out;
+          }
+
+          #navwrapper {
+            width: 100%;
+            height: 82px;
+            background-color: #015201;
+            transition: background-color .2s ease-in-out;
+          }
+
+          #navbar {
+            margin: 0 auto;
+            width:980px;
+            height:59px;
+          }
+          .logowrapper {
+            display: block;
+            padding: 30px 0;
+            color:#fff;
+            transition: background-color .2s ease-in-out;
+          }
+          .rowtext {
+            font-size:16px;
+            font-weight:bold;
+            color:#fff;
+            transition: background-color .2s ease-in-out;
+          }
+          .rowtext2 {
+            font-size:16px;
+            font-weight:bold;
+            color:rgb(0, 0, 0);
+          }
+          
+          tr, td {
+            text-align: center;
+            max-width: 100%;
+          }
+          .toggle{
+            position: relative;
+            top: -50px;
+            transform: translate(-50%,-50%);
+          }
+
+          .toggle input[type="checkbox"]{
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            border: none;
+            outline: none;
+          }
+
+          .toggle label{
+            width: 70px;
+            height: 30px;
+            border-radius: 50px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: #F37A5D;
+            transition: background .2s ease-in-out;
+          }
+
+          .toggle label:after{
+            content: '';
+            width: 30px;
+            height: 30px;
+            background: #3F4A63;
+            border-radius: 50%;
+            position: absolute;
+            top: 0;
+            left: -1px;
+            transition: all .2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+          }
+
+          .toggle input[type="checkbox"]:checked + label:after{
+            left : 42px;
+          }
+
+          .toggle input[type="checkbox"]:checked + label{
+            background: #FEC483;
+          }
+          
+        </style>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+    </head>
+    <body>
+
+      <audio id="ding">
+        <source src="/media/ding.mp3" type="audio/mpeg">
+      </audio>
+
+      <div id="navwrapper">
+        
+        <table id="navbar">
+            <tr>
+              <td>
+                <div class="toggle">
+
+                  <input type="checkbox" id="mode"/>
+                  <label for="mode"></label>
+                  
+                </div>
+              </td>
+                <td>
+                  
+                    <h1 class="logowrapper" id = 'mainname'><%= data.info.username %> 
+                      <button onclick = "logOut()">Logout</button>
+                      
+                    </h1>
+                </td>
+                <td>
+                  <button onclick = "global()">Go Global</button>
+                    <a id = "curruser" class="rowtext"></a>
+                </td>
+            </tr>
+          
+        </table>
+      </div>
+      <div class ="row">
+        <div class="column">
+          <div id = "info">
+            <p class="rowtext2"> Here are some informations</p>
+            <p class="rowtext2">Name:   <%= data.info.firstname %> <%= data.info.lastname %> </p>
+            <p class="rowtext2">Email:   <%= data.info.email %> </p>
+            <p class="rowtext2" id = "bdfield">Birthdate:  </p>
+          </div>
+          <div id = "reqsendreq">
+            <p class="rowtext2" id ="reqsendreqtitle"></p>
+            <button id = "requestbtn">
+              Send friend request
+            </button>
+            <button id = "block">
+              Block
+            </button>
+          </div>
+          
+          <div id ="friends">
+            <p class="rowtext2" id ="friendstitle"></p>
+          </div>
+          <div id = "messages">
+            <p class="rowtext2" id ="messagestitle"></p>
+          </div>
+        </div>
+        <div class="column">
+          <div id ="postsendmess">
+            <p class="rowtext2" id ="postsendmesstitle"></p>
+          </div>
+          <div id ="posts">
+            <p class="rowtext2" id ="poststitle">Posts:</p>
+          </div>
+        </div>
+      </div>
+      </div>
+      
+      <script>
+        console.log(localStorage)
+        var currusername = document.getElementById("curruser")
+        currusername.innerHTML = localStorage.currUser
+        currusername.href = '/user/' +  localStorage.currUser
+        
+        var navwrapper = document.getElementById("navwrapper")
+        var mainname = document.getElementById("mainname")
+        var curruser = document.getElementById("curruser")
+        var mode = document.getElementById("mode")
+        var bdfield = document.getElementById("bdfield")
+        var requestbtn = document.getElementById("requestbtn")
+        var blockbtn = document.getElementById("block")
+        var mainName = document.getElementById("mainname")
+        var requestlist = document.getElementById('reqsendreq')
+        var reqsendreqtitle = document.getElementById('reqsendreqtitle')
+        var friendstitle = document.getElementById('friendstitle')
+        var postsendmess = document.getElementById('postsendmess')
+        var postlist = document.getElementById('posts')
+        var messagelist = document.getElementById('messages')
+        var messagestitle = document.getElementById('messagestitle')
+        var ding = document.getElementById('ding')
+        requestbtn.onclick = sendRequest
+        requestbtn.disabled = true
+        var d = new Date('<%= data.info.birthdate %>')
+        d = d.toString()
+        bdfield.innerHTML+=d.substring(4,15)
+        blockbtn.style.visibility = 'collapse'
+        
+        console.log(localStorage.mode)
+        if(localStorage.mode == 'true'){ //darkmode
+          navwrapper.style.backgroundColor = '#015201'
+          mainname.style.color = '#fff'
+          curruser.style.color = '#fff'
+          document.body.style.backgroundColor = '#101310'
+          console.log(1)
+        }
+        else {  //lightmode
+          navwrapper.style.backgroundColor = '#04fc04'
+          mainname.style.color = '#000000'
+          curruser.style.color = '#000000'
+          document.body.style.backgroundColor = '#cfdbcf'
+          console.log(0)
+        }
+        mode.checked = localStorage.mode == 'true'
+        mode.oninput = changeMode
+        
+
+        info = {
+          "user": '<%= data.info.username %>'
+        }
+
+        data = {
+          method: 'POST',
+          headers: {
+            'Content-Type': "application/json"
+          },
+            body: JSON.stringify(info)
+        }
+        fetch('/getrequests', data)
+        .then((response) => response.json())
+          .then(data => {
+            if(data.includes(localStorage.currUser)){
+              requestbtn.disabled = true
+              requestbtn.innerHTML = 'Request sent'
+            }
+            else {
+              requestbtn.disabled = false
+            }
+          })
+          
+        function sendRequest() {
+          this.innerHTML = "Request sent"
+          this.disabled = true
+          var info = {
+            "sender": localStorage.currUser,
+            "accepter": '<%= data.info.username %>'
+          }
+
+          var data = {
+            method: 'POST',
+            headers: {
+              'Content-Type': "application/json"
+            },
+              body: JSON.stringify(info)
+          }
+          fetch('/sendrequest', data)
+          .then((response) =>{})
+        }
+
+        if(localStorage.currUser == '<%= data.info.username %>') {
+          mainname.innerHTML = 'Home'
+          requestbtn.style.visibility = 'collapse'
+          blockbtn.style.visibility = 'collapse'
+          var info = {
+            "user": localStorage.currUser
+          }
+
+          var data = {
+            method: 'POST',
+            headers: {
+              'Content-Type': "application/json"
+            },
+              body: JSON.stringify(info)
+          }
+          fetch('/getrequests', data)
+          .then((response) => response.json())
+            .then(data => {
+              if(data.length){
+                reqsendreqtitle.innerHTML = "Friend requests"
+              }
+              else 
+                reqsendreqtitle.innerHTML = "You have no friend requests... yet"
+
+              for(let i = 0;i< data.length;i++){
+                var currP = document.createElement('p')
+                var username = document.createElement('span')
+                var btn = document.createElement('button')
+                var declinebtn = document.createElement('button')
+                btn.onclick = accept
+                username.innerHTML = data[i] + ' '
+                btn.innerHTML = 'Accept'
+                declinebtn.innerHTML = 'Decline'
+                declinebtn.onclick = decline
+                currP.append(username)
+                currP.append(btn)
+                currP.append(declinebtn)
+                requestlist.appendChild(currP)
+
+              }
+            })
+          
+          
+          var table = document.createElement('TABLE')
+          table.style.width = '100%'
+          var tr = document.createElement('TR')
+          var td = document.createElement('TD')
+          td.style.textAlign = "center"
+          td.colSpan = 5
+          var tableTitle = document.createElement('p')
+          tableTitle.className = "rowtext2"
+          tableTitle.innerHTML = "Write a post!!!"
+          td.append(tableTitle)
+          tr.append(td)
+          table.append(tr)
+
+          tr = document.createElement('TR')
+          td = document.createElement('TD')
+          td.colSpan = 5
+          var inputTitle = document.createElement('input')
+          inputTitle.type = 'text'
+          inputTitle.id = 'title'
+          td.style.textAlign = "center"
+          inputTitle.style.width = '70%'
+          inputTitle.placeholder="title"
+          td.append(inputTitle)
+          tr.append(td)
+          table.append(tr)
+          
+          tr = document.createElement('TR')
+          td = document.createElement('TD')
+          td.colSpan = 5
+          var inputText = document.createElement('textarea')
+          inputText.id = 'text'
+          td.style.textAlign = "center"
+          inputText.style.width = '90%'
+          inputText.placeholder="Your beautiful post"
+          td.append(inputText)
+          tr.append(td)
+          table.append(tr)
+          
+          tr = document.createElement('TR')
+          td = document.createElement('TD')
+          var radio = document.createElement('input')
+          radio.type = 'radio'
+          radio.checked = true
+          var state = document.createElement('label')
+          state.innerHTML = "Happy"
+          radio.name = "state"
+          radio.id = 'happy'
+          td.append(radio)
+          td.append(state)
+          tr.append(td)
+
+          td = document.createElement('TD')
+          radio = document.createElement('input')
+          radio.type = 'radio'
+          state = document.createElement('label')
+          state.innerHTML = "Sad"
+          radio.name = "state"
+          radio.id = 'sad'
+          td.append(radio)
+          td.append(state)
+          tr.append(td)
+          
+          td = document.createElement('TD')
+          radio = document.createElement('input')
+          radio.type = 'radio'
+          state = document.createElement('label')
+          state.innerHTML = "Bored"
+          radio.name = "state"
+          radio.id = 'bored'
+          td.append(radio)
+          td.append(state)
+          tr.append(td)
+
+          td = document.createElement('TD')
+          radio = document.createElement('input')
+          radio.type = 'radio'
+          state = document.createElement('label')
+          state.innerHTML = "Excited"
+          radio.name = "state"
+          radio.id = 'excited'
+          td.append(radio)
+          td.append(state)
+          tr.append(td)
+          
+          td = document.createElement('TD')
+          var postbtn = document.createElement('button')
+          postbtn.innerHTML = 'Post'
+          postbtn.onclick = addPost
+          td.append(postbtn)
+          tr.append(td)
+
+          table.append(tr)
+          postsendmess.append(table)
+          
+          var info = {
+            "username" : '<%= data.info.username %>'
+          }
+
+          var data = {
+            method: 'POST',
+            headers: {
+              'Content-Type': "application/json"
+            },
+            body: JSON.stringify(info)
+          }
+          fetch('/getmessages', data)
+          .then(response => response.json())
+          .then(data => {
+            if(!data.length)
+              messagestitle.innerHTML = "You don't have any messages... yet"
+            else 
+              messagestitle.innerHTML = "Your messages"
+            for(let i = 0; i< data.length;i++) {
+              var sender = document.createElement('label')
+              sender.className = 'rowtext2'
+              sender.innerHTML = data[i].sender + ": "
+              var mess = document.createElement('span')
+              mess.innerHTML = data[i].text
+              var corp = document.createElement('p')
+              corp.id = 'del'+ i
+              var del = document.createElement('button')
+              del.innerHTML = 'Delete'
+              
+              del.onclick = function() { 
+                deleteMessage('del'+ i, data[i].sender, data[i].date)
+              }
+              
+                corp.append(sender)
+              corp.append(mess)
+              corp.append(del)
+              messagelist.append(corp)
+            }
+
+          })
+
+        }///////////////////////////////////////////////////////////////////////////
+        else {
+          var table = document.createElement('TABLE')
+          //table.style.border = 'thick solid #0000FF'
+          table.style.width = '100%'
+          var tr = document.createElement('TR')
+          var td = document.createElement('TD')
+          td.style.textAlign = "center"
+          td.colSpan = 5
+          var tableTitle = document.createElement('p')
+          tableTitle.className = "rowtext2"
+          tableTitle.innerHTML = "Leave a message!!!"
+          td.append(tableTitle)
+          tr.append(td)
+          table.append(tr)
+          
+          tr = document.createElement('TR')
+          td = document.createElement('TD')
+          td.colSpan = 5
+          var inputText = document.createElement('textarea')
+          inputText.id = 'text'
+          td.style.textAlign = "center"
+          inputText.style.width = '90%'
+          inputText.placeholder="Your beautiful message"
+          td.append(inputText)
+          tr.append(td)
+          table.append(tr)
+                   
+          tr = document.createElement('Tr')
+          var sendbtn = document.createElement('button')
+          sendbtn.innerHTML = 'Send'
+          sendbtn.onclick = sendMessage
+          tr.append(sendbtn)
+
+          table.append(tr)
+          postsendmess.append(table)
+
+
+        }
+
+        var divfr = document.getElementById('friends')
+          
+          if(<%= data.info.friends.length %>)
+            friendstitle.innerHTML = "Friends: "
+          else
+          friendstitle.innerHTML = "Go and make some friends! "
+
+          <% for(var i = 0; i < data.info.friends.length; i++){ %>
+            if('<%= data.info.friends[i] %>' == localStorage.currUser)
+              requestbtn.style.visibility = 'collapse'
+            var currtot = document.createElement('p')
+            var currFriend = document.createElement('a')
+            currFriend.className = "rowtext2"
+            var removebtn = document.createElement('button')
+            currFriend.innerHTML = ' <%= data.info.friends[i] %>' 
+            currFriend.href = '<%= data.info.friends[i] %>'
+            removebtn.innerHTML = 'Remove from Friends'
+            removebtn.onclick = removeFriend
+            currtot.appendChild(currFriend)
+            if(localStorage.currUser == '<%= data.info.username %>')
+              currtot.appendChild(removebtn)
+            divfr.appendChild(currtot)
+          <% } %>
+
+        function sendMessage() {
+
+          
+
+          var text = document.getElementById('text')
+          var newMess = {
+            "sender": localStorage.currUser,
+            "reciever": '<%= data.info.username %>',
+            "text": text.value,
+            "date": new Date()
+          }
+
+          var data = {
+            method: 'POST',
+            headers: {
+              'Content-Type': "application/json"
+            },
+            body: JSON.stringify(newMess)
+          }
+          fetch('/sendmessage', data)
+          .then(response => {
+            ding.play()
+            console.log(ding)
+            Swal.fire({
+              imageUrl: '/media/messSent.png',
+              imageHeight: 300,
+              title: 'Your message was sent!',
+              showConfirmButton: false,
+              timer: 1500,
+              background: 'rgb(237,234, 209)'
+            })
+            
+            
+          })
+
+        }
+
+        function decline() {
+          var parent = this.parentNode
+          var toAccept = parent.children[0].innerHTML
+          var info = {
+            "sender": toAccept.trim(),
+            "decliner": localStorage.currUser
+          }
+          var data = {
+            method: 'POST',
+            headers: {
+              'Content-Type': "application/json"
+            },
+            body: JSON.stringify(info)
+          }
+          fetch('/declinerequest', data)
+          .then(response => {
+            
+          })
+          parent.remove()
+        }
+
+        function accept(){
+          var parent = this.parentNode
+          var toAccept = parent.children[0].innerHTML
+          var info = {
+            "sender": toAccept.trim(),
+            "accepter": localStorage.currUser
+          }
+          var data = {
+            method: 'POST',
+            headers: {
+              'Content-Type': "application/json"
+            },
+            body: JSON.stringify(info)
+          }
+          fetch('/acceptrequest', data)
+          .then(response => {
+            
+          })
+          parent.remove()
+        }
+
+          var currUserEl = document.getElementById("currUser")
+          var info = {
+            "waiter" : '<%= data.info.username %>'
+          }
+        var data = {
+            method: 'POST',
+            headers: {
+              'Content-Type': "application/json"
+            },
+            body: JSON.stringify(info)
+          }
+          fetch('/getposts', data)
+          .then(response => response.json())
+          .then(data => {
+              for(let i = 0;i<data.length;i++){
+                  let table = document.createElement("TABLE")
+                  table.id = 'table' + i
+                  
+                  var title = document.createElement("p")
+                  title.id = "title" + i
+                  title.innerHTML = data[i].title
+                  var username = document.createElement("a")
+                  username.id = "username" + i
+                  username.href = "/user/" + data[i].username
+                  var span = document.createElement('span')
+                  span.innerHTML = ' is feeling ' + data[i].state
+                  username.innerHTML = data[i].username
+                  var date = document.createElement("p")
+                  date.id = "date" + i
+                  date.innerHTML = data[i].date
+                  var text = document.createElement("p")
+                  text.id = "text" + i
+                  text.innerHTML = data[i].text
+                  text.style.maxWidth = '100%'
+                  
+                  var temp = document.createElement("TR")
+                  temp.appendChild(username)
+                  temp.appendChild(span)
+
+                  table.appendChild(temp)
+                  
+                  temp = document.createElement("TR")
+                  temp.appendChild(title)
+                  table.appendChild(temp)
+
+                  temp = document.createElement("TR")
+                  temp.appendChild(text)
+                  table.appendChild(temp)
+
+                  temp = document.createElement("TR")
+                  //var col = document.createElement("TD")
+                  temp.appendChild(date)
+                  
+                  var del = document.createElement("button")
+                  del.id = i
+                  del.innerHTML = "Delete"
+                  del.style.visibility = 'hidden'
+                  col = document.createElement("TD")
+                  del.onclick = function() { 
+                        deletePost('table' + i, data[i].username, data[i].date)
+                      }
+                  if(data[i].username == localStorage.currUser){
+                      console.log(data[i].username)
+                      del.style.visibility = 'visible'
+                      
+                      temp.appendChild(del)
+                      
+                  }
+                  //alert(data[i].username + ' '+ data[i].date)
+                  
+                  temp.appendChild(del)
+                  table.appendChild(temp)
+                  if(data[i].state == 'happy'){
+                      table.style.backgroundColor = 'rgba(144, 241, 125, 0.725)'
+                  }
+                  if(data[i].state == 'sad'){
+                      table.style.backgroundColor = 'rgba(241, 125, 125, 0.725)'
+                  }
+                  if(data[i].state == 'bored'){
+                      table.style.backgroundColor = 'rgba(51, 43, 43, 0.725)'
+                  }
+                  if(data[i].state == 'excited'){
+                      table.style.backgroundColor = 'rgba(219, 252, 32, 0.725)'
+                  }
+                  table.style.width = '100%'
+                  table.style.marginTop = "20px"
+                  postlist.appendChild(table)
+              }
+          })
+            
+          function global(){
+            window.location = '/global'
+          }
+          
+
+          function removeFriend(){
+            var parent = this.parentNode
+            var toAccept = parent.children[0].innerHTML
+            var info = {
+              "friend": toAccept.trim(),
+              "deleter": localStorage.currUser
+            }
+            var data = {
+              method: 'POST',
+              headers: {
+                'Content-Type': "application/json"
+              },
+              body: JSON.stringify(info)
+            }
+            fetch('/deletefriend', data)
+            .then(response => {
+              
+            })
+            parent.remove()
+            
+          }
+
+          function deletePost(id, username, date){
+           // alert(id)
+            
+              var info = {
+                  "username" : username,
+                  "date":date
+              }
+              console.log(info)
+              var data = {
+                  method: 'POST',
+                  headers: {
+                  'Content-Type': "application/json"
+                  },
+                  body: JSON.stringify(info)
+              }
+              
+              fetch('/deletePost', data)
+              .then((response) =>{
+                
+              })
+              var table = document.getElementById(id)
+              setTimeout(function(){
+                table.children[3].remove()
+                setTimeout(function(){
+                  table.children[2].remove()
+                  setTimeout(function(){
+                    table.children[1].remove()
+                    setTimeout(function(){
+                      table.children[0].remove()
+                      setTimeout(function(){
+                        table.remove()
+                      },100)},100)}, 100)}, 100)}, 100)
+              
+              
+          }    
+
+          function addPost() {
+            var title = document.getElementById("title").value
+            var text = document.getElementById("text").value
+            var state
+            if(document.getElementById('happy').checked)
+                state = 'happy'
+            if(document.getElementById('sad').checked)
+                state = 'sad'
+            if(document.getElementById('excited').checked)
+                state = 'excited'
+            if(document.getElementById('bored').checked)
+                state = 'bored'
+
+            var newPost = {
+                "username": localStorage.currUser,
+                "date" : new Date(),
+                "title": title,
+                "text": text,
+                "state": state
+            }
+            var data = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': "application/json"
+                },
+                body: JSON.stringify(newPost)
+            }
+            fetch('/addpost', data)
+            .then(response => {
+                setTimeout(function(){
+                  window.location.reload()
+                  
+                }, 1600)
+                console.log(ding)
+                ding.play()
+                Swal.fire({
+                  imageUrl: '/media/messSent.png',
+                  imageHeight: 300,
+                  title: "You've posted something!",
+                  showConfirmButton: false,
+                  timer: 1500,
+                  background: 'rgb(237,234, 209)'
+                })
+                
+              
+            })
+            
+          }
+
+          function deleteMessage(id, sender, date) {
+        //    alert(id)
+            var corp = document.getElementById(id)
+            var toSend = {
+              "username": localStorage.currUser,
+              "sender": sender,
+              "date": date
+            }
+            var data = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': "application/json"
+                },
+                body: JSON.stringify(toSend)
+            }
+            fetch('/deletemessage', data)
+          
+            setTimeout(function(){
+              corp.children[2].remove()
+              setTimeout(function(){
+                corp.children[1].remove()
+                setTimeout(function(){
+                  corp.remove()
+                  }, 500)}, 500)}, 500)
+           
+          }
+
+          
+          
+          function logOut(){
+              localStorage.currUser = 'noone'
+              window.location = '/login'
+          }
+
+          function changeMode() {
+            if(mode.checked == true){ //darkmode
+              navwrapper.style.backgroundColor = '#015201'
+              mainname.style.color = '#fff'
+              curruser.style.color = '#fff'
+              document.body.style.backgroundColor = '#101310'
+              localStorage.mode = true
+            }
+            else {  //lightmode
+              navwrapper.style.backgroundColor = '#04fc04'
+              mainname.style.color = '#000000'
+              curruser.style.color = '#000000'
+              document.body.style.backgroundColor = '#cfdbcf'
+              localStorage.mode = false
+            }
+            
+            console.log(localStorage)
+          }
+
+          
+        </script>
+
+        <style>
+          body {
+            /*color: #04fc04*/
+          }
+        </style>
+    </body>
+</html>
+
+
